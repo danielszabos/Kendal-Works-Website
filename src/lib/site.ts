@@ -10,6 +10,9 @@ export const ADDRESS_LINES = [
   "Placeholder — postcode",
 ];
 
+// Used by the gallery's office carousel and the contact form's office dropdown.
+export const OFFICE_NAMES = Array.from({ length: 9 }, (_, index) => `Office ${index + 1}`);
+
 // TODO: Placeholder — confirm the real opening hours and access arrangements before publishing.
 export const OPENING_HOURS = [
   { day: "Monday – Friday", hours: "Placeholder — real office hours" },

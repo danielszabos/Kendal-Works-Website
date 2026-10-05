@@ -3,7 +3,13 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Clock, MapPin, Phone } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { CallButton } from "@/components/CallButton";
-import { ADDRESS_LINES, OPENING_HOURS, PHONE_DISPLAY, PHONE_HREF } from "@/lib/site";
+import {
+  ADDRESS_LINES,
+  OFFICE_NAMES,
+  OPENING_HOURS,
+  PHONE_DISPLAY,
+  PHONE_HREF,
+} from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -112,15 +118,47 @@ function Contact() {
                 </div>
                 <div>
                   <label htmlFor="email" className="text-sm font-semibold text-primary">
-                    Email
+                    Email address
                   </label>
                   <input
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="email"
                     required
                     className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="text-sm font-semibold text-primary">
+                    Phone number{" "}
+                    <span className="font-normal text-muted-foreground">(optional)</span>
+                  </label>
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="office" className="text-sm font-semibold text-primary">
+                    Which office are you interested in?
+                  </label>
+                  <select
+                    id="office"
+                    name="office"
+                    defaultValue="Not sure yet"
+                    className="mt-2 w-full cursor-pointer rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="Not sure yet">Not sure yet</option>
+                    {OFFICE_NAMES.map((office) => (
+                      <option key={office} value={office}>
+                        {office}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label htmlFor="message" className="text-sm font-semibold text-primary">

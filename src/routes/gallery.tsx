@@ -4,6 +4,7 @@ import { PageLayout } from "@/components/PageLayout";
 import { Check } from "lucide-react";
 import { CtaBand } from "@/components/CtaBand";
 import { CallButton } from "@/components/CallButton";
+import { OFFICE_NAMES } from "@/lib/site";
 import {
   Dialog,
   DialogContent,
@@ -74,7 +75,7 @@ const SHARED_AMENITIES = [
   "Free parking",
 ];
 
-const officeSlides = Array.from({ length: 9 }, (_, index) => {
+const officeSlides = OFFICE_NAMES.map((label, index) => {
   const allImages = [
     { src: officePrivate, alt: `Office ${index + 1} with desk and natural light` },
     { src: officeTwin, alt: `Office ${index + 1} with twin desk setup` },
@@ -94,7 +95,7 @@ const officeSlides = Array.from({ length: 9 }, (_, index) => {
   const capacity = OFFICE_CAPACITIES[index] ?? 1;
 
   return {
-    label: `Office ${index + 1}`,
+    label,
     layout,
     images: images.slice(0, layout),
     features: [
