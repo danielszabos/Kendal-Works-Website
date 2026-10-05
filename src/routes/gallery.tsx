@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
 import { CtaBand } from "@/components/CtaBand";
@@ -32,16 +33,58 @@ export const Route = createFileRoute("/gallery")({
   component: Gallery,
 });
 
+type GalleryImage = {
+  src: string;
+  alt: string;
+};
+
+type OfficeLayout = 2 | 3 | 4;
+
+const getOfficeLayout = (index: number): OfficeLayout => {
+  const seeded = (index * 57 + 13) % 10;
+
+  if (seeded < 4) {
+    return 2;
+  }
+
+  if (seeded < 7) {
+    return 3;
+  }
+
+  return 4;
+};
+
+const officeSlides = Array.from({ length: 9 }, (_, index) => {
+  const allImages = [
+    { src: officePrivate, alt: `Office ${index + 1} with desk and natural light` },
+    { src: officeTwin, alt: `Office ${index + 1} with twin desk setup` },
+    { src: corridor, alt: `Corridor view near Office ${index + 1}` },
+    { src: meetingSmall, alt: `Office ${index + 1} meeting nook` },
+    { src: meetingRoom, alt: `Office ${index + 1} meeting room` },
+    { src: commonArea, alt: `Office ${index + 1} common area` },
+    { src: kitchen, alt: `Office ${index + 1} kitchen` },
+  ];
+
+  const layout = getOfficeLayout(index);
+  const images = [...allImages].sort((a, b) => {
+    const seedA = (index + a.alt.length) % 7;
+    const seedB = (index + b.alt.length) % 7;
+    return seedA - seedB;
+  });
+
+  return {
+    label: `Office ${index + 1}`,
+    layout,
+    images: images.slice(0, layout),
+  };
+});
+
 const groups = [
   {
     title: "Offices",
     // TODO: Placeholder — confirm real room sizes/capacities and features before publishing.
     blurb: "Placeholder — describe the real room sizes, capacities and features on offer.",
-    images: [
-      { src: officePrivate, alt: "Single private office with desk and window" },
-      { src: officeTwin, alt: "Two-person office with twin desks and monitors" },
-      { src: corridor, alt: "Corridor leading to private office suites" },
-    ],
+    images: [],
   },
   {
     title: "Meeting rooms",
@@ -65,6 +108,155 @@ const groups = [
   },
 ];
 
+function OfficeCarousel() {
+  const [startIndex, setStartIndex] = useState(0);
+
+  const visibleOffices = Array.from({ length: 3 }, (_, offset) => {
+    const index = (startIndex + offset) % officeSlides.length;
+    return officeSlides[index];
+  });
+
+  const previousOffice = () => {
+    setStartIndex((current) => (current - 1 + officeSlides.length) % officeSlides.length);
+  };
+
+  const nextOffice = () => {
+    setStartIndex((current) => (current + 1) % officeSlides.length);
+  };
+
+  return (
+    <div className="mt-8">
+      <div className="mb-4 flex items-center justify-end gap-3">
+        <button
+          type="button"
+          onClick={previousOffice}
+          aria-label="Previous office"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-xl text-primary shadow-card transition hover:border-primary/60 hover:text-primary"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          onClick={nextOffice}
+          aria-label="Next office"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-xl text-primary shadow-card transition hover:border-primary/60 hover:text-primary"
+        >
+          ›
+        </button>
+      </div>
+
+      <div className="flex gap-5 md:hidden">
+        {visibleOffices.slice(0, 1).map((office, index) => (
+          <div key={`${office.label}-${index}`} className="w-full shrink-0">
+            <OfficeCard label={office.label} images={office.images} layout={office.layout} />
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden gap-5 md:grid md:grid-cols-3">
+        {visibleOffices.map((office, index) => (
+          <div key={`${office.label}-${index}`} className="min-w-0">
+            <OfficeCard label={office.label} images={office.images} layout={office.layout} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OfficeCard({
+  label,
+  images,
+  layout,
+}: {
+  label: string;
+  images: GalleryImage[];
+  layout: OfficeLayout;
+}) {
+  const renderImages = () => {
+    if (layout === 2) {
+      return (
+        <div className="grid h-[360px] grid-rows-2 gap-2 p-2 md:h-[420px]">
+          {images.map((image, index) => (
+            <img
+              key={`${label}-${image.alt}-${index}`}
+              src={image.src}
+              alt={image.alt}
+              width={1200}
+              height={900}
+              loading="lazy"
+              className="h-full w-full rounded-xl object-cover"
+            />
+          ))}
+        </div>
+      );
+    }
+
+    if (layout === 3) {
+      return (
+        <div className="grid h-[320px] grid-rows-2 gap-2 p-2 md:h-[420px]">
+          <img
+            src={images[0].src}
+            alt={images[0].alt}
+            width={1200}
+            height={900}
+            loading="lazy"
+            className="h-full w-full rounded-xl object-cover"
+          />
+          <div className="grid grid-cols-2 gap-2">
+            {images.slice(1).map((image, index) => (
+              <img
+                key={`${label}-${image.alt}-${index}`}
+                src={image.src}
+                alt={image.alt}
+                width={1200}
+                height={900}
+                loading="lazy"
+                className="h-full w-full rounded-xl object-cover"
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid h-[360px] grid-cols-[1.6fr_0.9fr] gap-2 p-2 md:h-[420px]">
+        <img
+          src={images[0].src}
+          alt={images[0].alt}
+          width={1200}
+          height={900}
+          loading="lazy"
+          className="h-full w-full rounded-xl object-cover"
+        />
+        <div className="grid grid-rows-3 gap-2">
+          {images.slice(1).map((image, index) => (
+            <img
+              key={`${label}-${image.alt}-${index}`}
+              src={image.src}
+              alt={image.alt}
+              width={1200}
+              height={900}
+              loading="lazy"
+              className="h-full w-full rounded-xl object-cover"
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card">
+      <div className="border-b border-border/50 bg-secondary/60 px-4 py-3">
+        <h3 className="text-lg font-bold">{label}</h3>
+      </div>
+      {renderImages()}
+    </div>
+  );
+}
+
 function Gallery() {
   return (
     <PageLayout>
@@ -87,23 +279,28 @@ function Gallery() {
           <div className="container-page">
             <h2 className="text-2xl font-bold md:text-3xl">{group.title}</h2>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">{group.blurb}</p>
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {group.images.map((img) => (
-                <figure
-                  key={img.alt}
-                  className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card"
-                >
-                  <img
-                    src={img.src}
-                    alt={img.alt}
-                    width={1200}
-                    height={900}
-                    loading="lazy"
-                    className="aspect-[4/3] w-full object-cover"
-                  />
-                </figure>
-              ))}
-            </div>
+
+            {group.title === "Offices" ? (
+              <OfficeCarousel />
+            ) : (
+              <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {group.images.map((img) => (
+                  <figure
+                    key={img.alt}
+                    className="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-card"
+                  >
+                    <img
+                      src={img.src}
+                      alt={img.alt}
+                      width={1200}
+                      height={900}
+                      loading="lazy"
+                      className="aspect-[4/3] w-full object-cover"
+                    />
+                  </figure>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       ))}
