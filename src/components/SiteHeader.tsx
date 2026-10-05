@@ -17,6 +17,23 @@ export function SiteHeader() {
   const pathname = useLocation({ select: (loc) => loc.pathname });
   const isHome = pathname === "/";
 
+  const handleBookNowClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== "/contact") {
+      return;
+    }
+
+    event.preventDefault();
+
+    const form = document.getElementById("send-message");
+    if (form) {
+      form.scrollIntoView({ behavior: "smooth", block: "center" });
+      window.history.replaceState(null, "", "/contact#send-message");
+      return;
+    }
+
+    window.location.assign("/contact#send-message");
+  };
+
   useEffect(() => {
     if (!isHome) return;
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -103,6 +120,7 @@ export function SiteHeader() {
 
           <Link
             to="/contact#send-message"
+            onClick={handleBookNowClick}
             className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-semibold tracking-tight text-primary-foreground shadow-card transition-all hover:brightness-110 md:text-base"
           >
             Book Now
