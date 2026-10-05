@@ -178,15 +178,19 @@ function OfficeCard({
       return (
         <div className="grid h-[360px] grid-rows-2 gap-2 p-2 md:h-[420px]">
           {images.map((image, index) => (
-            <img
+            <div
               key={`${label}-${image.alt}-${index}`}
-              src={image.src}
-              alt={image.alt}
-              width={1200}
-              height={900}
-              loading="lazy"
-              className="h-full w-full rounded-xl object-cover"
-            />
+              className="overflow-hidden rounded-xl border border-border/40 bg-secondary/40"
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                width={1200}
+                height={900}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            </div>
           ))}
         </div>
       );
@@ -195,25 +199,31 @@ function OfficeCard({
     if (layout === 3) {
       return (
         <div className="grid h-[320px] grid-rows-2 gap-2 p-2 md:h-[420px]">
-          <img
-            src={images[0].src}
-            alt={images[0].alt}
-            width={1200}
-            height={900}
-            loading="lazy"
-            className="h-full w-full rounded-xl object-cover"
-          />
+          <div className="overflow-hidden rounded-xl border border-border/40 bg-secondary/40">
+            <img
+              src={images[0].src}
+              alt={images[0].alt}
+              width={1200}
+              height={900}
+              loading="lazy"
+              className="h-full w-full object-cover"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-2">
             {images.slice(1).map((image, index) => (
-              <img
+              <div
                 key={`${label}-${image.alt}-${index}`}
-                src={image.src}
-                alt={image.alt}
-                width={1200}
-                height={900}
-                loading="lazy"
-                className="h-full w-full rounded-xl object-cover"
-              />
+                className="overflow-hidden rounded-xl border border-border/40 bg-secondary/40"
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  width={1200}
+                  height={900}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              </div>
             ))}
           </div>
         </div>
@@ -222,25 +232,31 @@ function OfficeCard({
 
     return (
       <div className="grid h-[360px] grid-cols-[1.6fr_0.9fr] gap-2 p-2 md:h-[420px]">
-        <img
-          src={images[0].src}
-          alt={images[0].alt}
-          width={1200}
-          height={900}
-          loading="lazy"
-          className="h-full w-full rounded-xl object-cover"
-        />
+        <div className="overflow-hidden rounded-xl border border-border/40 bg-secondary/40">
+          <img
+            src={images[0].src}
+            alt={images[0].alt}
+            width={1200}
+            height={900}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
+        </div>
         <div className="grid grid-rows-3 gap-2">
           {images.slice(1).map((image, index) => (
-            <img
+            <div
               key={`${label}-${image.alt}-${index}`}
-              src={image.src}
-              alt={image.alt}
-              width={1200}
-              height={900}
-              loading="lazy"
-              className="h-full w-full rounded-xl object-cover"
-            />
+              className="overflow-hidden rounded-xl border border-border/40 bg-secondary/40"
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                width={1200}
+                height={900}
+                loading="lazy"
+                className="h-full w-full object-cover"
+              />
+            </div>
           ))}
         </div>
       </div>
