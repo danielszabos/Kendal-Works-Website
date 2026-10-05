@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageLayout } from "@/components/PageLayout";
 import { CtaBand } from "@/components/CtaBand";
@@ -110,18 +110,38 @@ const groups = [
 
 function OfficeCarousel() {
   const [startIndex, setStartIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
 
-  const visibleOffices = Array.from({ length: 3 }, (_, offset) => {
+    return window.innerWidth >= 768;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const pageSize = isDesktop ? 3 : 1;
+
+  const visibleOffices = Array.from({ length: pageSize }, (_, offset) => {
     const index = (startIndex + offset) % officeSlides.length;
     return officeSlides[index];
   });
 
   const previousOffice = () => {
-    setStartIndex((current) => (current - 1 + officeSlides.length) % officeSlides.length);
+    setStartIndex((current) => (current - pageSize + officeSlides.length) % officeSlides.length);
   };
 
   const nextOffice = () => {
-    setStartIndex((current) => (current + 1) % officeSlides.length);
+    setStartIndex((current) => (current + pageSize) % officeSlides.length);
   };
 
   return (

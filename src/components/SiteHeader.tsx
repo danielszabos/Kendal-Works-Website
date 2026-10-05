@@ -101,7 +101,12 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <CallButton size="sm" label="Book Now" showIcon={false} />
+          <Link
+            to="/contact#send-message"
+            className="inline-flex items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-semibold tracking-tight text-primary-foreground shadow-card transition-all hover:brightness-110 md:text-base"
+          >
+            Book Now
+          </Link>
 
           <button
             type="button"

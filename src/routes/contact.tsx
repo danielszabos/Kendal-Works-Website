@@ -136,6 +136,7 @@ function Contact() {
               </div>
             ) : (
               <form
+                id="send-message"
                 onSubmit={handleSubmit}
                 className="mt-6 space-y-5 rounded-2xl border border-border/60 bg-card p-7 shadow-card"
               >
