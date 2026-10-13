@@ -1,5 +1,5 @@
 import { createFileRoute, useLocation } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Clock, MapPin, Phone } from "lucide-react";
 import { PageLayout } from "@/components/PageLayout";
 import { CallButton } from "@/components/CallButton";
@@ -10,6 +10,7 @@ import {
   PHONE_DISPLAY,
   PHONE_HREF,
 } from "@/lib/site";
+import { sendContactMessage } from "@/lib/contact";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -34,6 +35,8 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
+  const startedAt = useRef(Date.now());
   const location = useLocation();
 
   useEffect(() => {
@@ -52,9 +55,33 @@ function Contact() {
     });
   }, [location.pathname, location.hash]);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSent(true);
+    const fields = new FormData(e.currentTarget);
+    const get = (key: string) => String(fields.get(key) ?? "");
+
+    setStatus("sending");
+    try {
+      const result = await sendContactMessage({
+        data: {
+          name: get("name"),
+          email: get("email"),
+          phone: get("phone"),
+          office: get("office"),
+          message: get("message"),
+          website: get("website"),
+          startedAt: startedAt.current,
+        },
+      });
+      if (result.ok) {
+        setSent(true);
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
   }
 
   return (
@@ -172,11 +199,26 @@ function Contact() {
                     className="mt-2 w-full rounded-lg border border-border bg-background px-4 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                   />
                 </div>
+                {/* Honeypot: hidden from people and screen readers; bots that fill every field get filtered out. */}
+                <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                  <label htmlFor="website">Website</label>
+                  <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+                </div>
+                {status === "error" && (
+                  <p role="alert" className="text-sm text-destructive">
+                    Sorry, your message couldn't be sent. Please try again or give us a call on{" "}
+                    <a href={PHONE_HREF} className="font-semibold underline">
+                      {PHONE_DISPLAY}
+                    </a>
+                    .
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-card transition-all hover:brightness-125"
+                  disabled={status === "sending"}
+                  className="w-full rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-card transition-all hover:brightness-125 disabled:cursor-wait disabled:opacity-70"
                 >
-                  Send message
+                  {status === "sending" ? "Sending…" : "Send message"}
                 </button>
               </form>
             )}
